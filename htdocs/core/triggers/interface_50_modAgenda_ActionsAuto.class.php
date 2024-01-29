@@ -860,7 +860,7 @@ class InterfaceActionsAuto extends DolibarrTriggers
 				}
 			}
 			if (empty($object->actionmsg)) {
-				$object->actionmsg = $langs->transnoentities("SupplierOrderSubmitedInDolibarr", ($object->newref ? $object->newref : $object->ref));
+				$object->actionmsg = $langs->transnoentities("SupplierOrderSubmitedInDolibarr", ($object->newref ? $object->newref : $object->ref), ($object->getInputMethod()));
 			}
 
 			if (!empty($object->context['comments'])) {
