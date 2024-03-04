@@ -2,6 +2,7 @@
 /* Copyright (C) 2013-2014  Jean-François Ferry     <jfefe@aternatik.fr>
  * Copyright (C) 2018       Nicolas ZABOURI         <info@inovea-conseil.com>
  * Copyright (C) 2018-2021  Frédéric France         <frederic.france@netlogic.fr>
+ * Copyright (C) 2024		William Mead			<william.mead@manchenumerique.fr>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -61,6 +62,7 @@ $search_ref = GETPOST("search_ref", 'alpha');
 $search_type = GETPOST("search_type", 'alpha');
 $search_address = GETPOST('search_address', 'alpha');
 $search_zip = GETPOST("search_zip", 'alpha');
+$search_town = GETPOST("search_town", 'alpha');
 
 // Load variable for pagination
 $limit = GETPOSTINT('limit') ? GETPOSTINT('limit') : $conf->liste_limit;
@@ -89,22 +91,31 @@ $pageprev = $page - 1;
 $pagenext = $page + 1;
 
 $arrayfields = array(
-		't.ref' => array(
-				'label' => $langs->trans("Ref"),
-				'checked' => 1
-		),
-		'ty.label' => array(
-				'label' => $langs->trans("ResourceType"),
-				'checked' => 1
-		),
-		't.address' => array(
-			'label' => $langs->trans("Address"),
-			'checked' => 1
-		),
-		't.zip' => array(
-			'label' => $langs->trans("Zip"),
-			'checked' => 1
-		),
+	't.ref' => array(
+		'label' => $langs->trans("Ref"),
+		'position' => 1,
+		'checked' => 1
+	),
+	'ty.label' => array(
+		'label' => $langs->trans("ResourceType"),
+		'position' => 2,
+		'checked' => 1
+	),
+	't.address' => array(
+		'label' => $langs->trans("Address"),
+		'position' => 3,
+		'checked' => 0
+	),
+	't.zip' => array(
+		'label' => $langs->trans("Zip"),
+		'position' => 4,
+		'checked' => 0
+	),
+	't.town' => array(
+		'label' => $langs->trans("Town"),
+		'position' => 5,
+		'checked' => 1
+	),
 );
 // Extra fields
 include DOL_DOCUMENT_ROOT.'/core/tpl/extrafields_list_array_fields.tpl.php';
@@ -119,6 +130,9 @@ include DOL_DOCUMENT_ROOT.'/core/actions_changeselectedfields.inc.php';
 if (GETPOST('button_removefilter_x', 'alpha') || GETPOST('button_removefilter.x', 'alpha') || GETPOST('button_removefilter', 'alpha')) { // Both test are required to be compatible with all browsers
 	$search_ref = "";
 	$search_type = "";
+	$search_address = "";
+	$search_zip = "";
+	$search_town = "";
 	$search_array_options = array();
 	$filter = array();
 }
@@ -186,7 +200,10 @@ if ($search_zip != '') {
 	$param .= '&search_zip='.urlencode($search_zip);
 	$filter['t.zip'] = $search_zip;
 }
-
+if ($search_town != '') {
+	$param .= '&search_town='.urlencode($search_town);
+	$filter['t.town'] = $search_town;
+}
 // Including the previous script generate the correct SQL filter for all the extrafields
 // we are playing with the behaviour of the Dolresource::fetchAll() by generating a fake
 // extrafields filter key to make it works
@@ -277,6 +294,11 @@ if (!empty($arrayfields['t.zip']['checked'])) {
 	print '<input type="text" class="flat searchstring maxwidth75imp" name="search_zip" value="'.dol_escape_htmltag($search_zip).'">';
 	print '</td>';
 }
+if (!empty($arrayfields['t.town']['checked'])) {
+	print '<td class="liste_titre">';
+	print '<input type="text" class="flat searchstring maxwidth75imp" name="search_town" value="'.dol_escape_htmltag($search_town).'">';
+	print '</td>';
+}
 // Extra fields
 include DOL_DOCUMENT_ROOT.'/core/tpl/extrafields_list_search_input.tpl.php';
 // Action column
@@ -304,6 +326,9 @@ if (!empty($arrayfields['t.address']['checked'])) {
 }
 if (!empty($arrayfields['t.zip']['checked'])) {
 	print_liste_field_titre($arrayfields['t.zip']['label'], $_SERVER["PHP_SELF"], "t.zip", "", $param, "", $sortfield, $sortorder);
+}
+if (!empty($arrayfields['t.town']['checked'])) {
+	print_liste_field_titre($arrayfields['t.town']['label'], $_SERVER["PHP_SELF"], "t.town", "", $param, "", $sortfield, $sortorder);
 }
 // Extra fields
 include DOL_DOCUMENT_ROOT.'/core/tpl/extrafields_list_search_title.tpl.php';
@@ -368,6 +393,16 @@ if ($ret) {
 				$totalarray['nbfield']++;
 			}
 		}
+
+		if (!empty($arrayfields['t.town']['checked'])) {
+			print '<td>';
+			print $resource->town;
+			print '</td>';
+			if (!$i) {
+				$totalarray['nbfield']++;
+			}
+		}
+
 		// Extra fields
 		$obj = (object) $resource->array_options;
 		include DOL_DOCUMENT_ROOT.'/core/tpl/extrafields_list_print_fields.tpl.php';
