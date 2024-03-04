@@ -59,6 +59,8 @@ if (!is_array($search_array_options)) {
 }
 $search_ref = GETPOST("search_ref", 'alpha');
 $search_type = GETPOST("search_type", 'alpha');
+$search_address = GETPOST('search_address', 'alpha');
+$search_zip = GETPOST("search_zip", 'alpha');
 
 // Load variable for pagination
 $limit = GETPOSTINT('limit') ? GETPOSTINT('limit') : $conf->liste_limit;
@@ -94,6 +96,14 @@ $arrayfields = array(
 		'ty.label' => array(
 				'label' => $langs->trans("ResourceType"),
 				'checked' => 1
+		),
+		't.address' => array(
+			'label' => $langs->trans("Address"),
+			'checked' => 1
+		),
+		't.zip' => array(
+			'label' => $langs->trans("Zip"),
+			'checked' => 1
 		),
 );
 // Extra fields
@@ -168,6 +178,14 @@ if ($search_type != '') {
 	$param .= '&search_type='.urlencode($search_type);
 	$filter['ty.label'] = $search_type;
 }
+if ($search_address != '') {
+	$param .= '&search_address='.urlencode($search_address);
+	$filter['t.address'] = $search_address;
+}
+if ($search_zip != '') {
+	$param .= '&search_zip='.urlencode($search_zip);
+	$filter['t.zip'] = $search_zip;
+}
 
 // Including the previous script generate the correct SQL filter for all the extrafields
 // we are playing with the behaviour of the Dolresource::fetchAll() by generating a fake
@@ -241,12 +259,22 @@ if (getDolGlobalString('MAIN_CHECKBOX_LEFT_COLUMN')) {
 }
 if (!empty($arrayfields['t.ref']['checked'])) {
 	print '<td class="liste_titre">';
-	print '<input type="text" class="flat" name="search_ref" value="'.$search_ref.'" size="6">';
+	print '<input type="text" class="flat searchstring maxwidth75imp" name="search_ref" value="'.dol_escape_htmltag($search_ref).'">';
 	print '</td>';
 }
 if (!empty($arrayfields['ty.label']['checked'])) {
 	print '<td class="liste_titre">';
-	print '<input type="text" class="flat" name="search_type" value="'.$search_type.'" size="6">';
+	print '<input type="text" class="flat searchstring maxwidth75imp" name="search_type" value="'.dol_escape_htmltag($search_type).'">';
+	print '</td>';
+}
+if (!empty($arrayfields['t.address']['checked'])) {
+	print '<td class="liste_titre">';
+	print '<input type="text" class="flat searchstring maxwidth75imp" name="search_address" value="'.dol_escape_htmltag($search_address).'">';
+	print '</td>';
+}
+if (!empty($arrayfields['t.zip']['checked'])) {
+	print '<td class="liste_titre">';
+	print '<input type="text" class="flat searchstring maxwidth75imp" name="search_zip" value="'.dol_escape_htmltag($search_zip).'">';
 	print '</td>';
 }
 // Extra fields
@@ -270,6 +298,12 @@ if (!empty($arrayfields['t.ref']['checked'])) {
 }
 if (!empty($arrayfields['ty.label']['checked'])) {
 	print_liste_field_titre($arrayfields['ty.label']['label'], $_SERVER["PHP_SELF"], "ty.label", "", $param, "", $sortfield, $sortorder);
+}
+if (!empty($arrayfields['t.address']['checked'])) {
+	print_liste_field_titre($arrayfields['t.address']['label'], $_SERVER["PHP_SELF"], "t.address", "", $param, "", $sortfield, $sortorder);
+}
+if (!empty($arrayfields['t.zip']['checked'])) {
+	print_liste_field_titre($arrayfields['t.zip']['label'], $_SERVER["PHP_SELF"], "t.zip", "", $param, "", $sortfield, $sortorder);
 }
 // Extra fields
 include DOL_DOCUMENT_ROOT.'/core/tpl/extrafields_list_search_title.tpl.php';
@@ -311,6 +345,24 @@ if ($ret) {
 		if (!empty($arrayfields['ty.label']['checked'])) {
 			print '<td>';
 			print $resource->type_label;
+			print '</td>';
+			if (!$i) {
+				$totalarray['nbfield']++;
+			}
+		}
+
+		if (!empty($arrayfields['t.address']['checked'])) {
+			print '<td>';
+			print $resource->address;
+			print '</td>';
+			if (!$i) {
+				$totalarray['nbfield']++;
+			}
+		}
+
+		if (!empty($arrayfields['t.zip']['checked'])) {
+			print '<td>';
+			print $resource->zip;
 			print '</td>';
 			if (!$i) {
 				$totalarray['nbfield']++;
