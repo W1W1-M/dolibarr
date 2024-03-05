@@ -63,6 +63,7 @@ $search_type = GETPOST("search_type", 'alpha');
 $search_address = GETPOST('search_address', 'alpha');
 $search_zip = GETPOST("search_zip", 'alpha');
 $search_town = GETPOST("search_town", 'alpha');
+$search_max_users = GETPOST("search_max_users", 'alpha');
 
 // Load variable for pagination
 $limit = GETPOSTINT('limit') ? GETPOSTINT('limit') : $conf->liste_limit;
@@ -116,6 +117,11 @@ $arrayfields = array(
 		'position' => 5,
 		'checked' => 1
 	),
+	't.max_users' => array(
+		'label' => $langs->trans("Max_users"),
+		'position' => 6,
+		'checked' => 1
+	),
 );
 // Extra fields
 include DOL_DOCUMENT_ROOT.'/core/tpl/extrafields_list_array_fields.tpl.php';
@@ -133,6 +139,7 @@ if (GETPOST('button_removefilter_x', 'alpha') || GETPOST('button_removefilter.x'
 	$search_address = "";
 	$search_zip = "";
 	$search_town = "";
+	$search_max_users = "";
 	$search_array_options = array();
 	$filter = array();
 }
@@ -203,6 +210,10 @@ if ($search_zip != '') {
 if ($search_town != '') {
 	$param .= '&search_town='.urlencode($search_town);
 	$filter['t.town'] = $search_town;
+}
+if ($search_max_users != '') {
+	$param .= '&search_max_users='.urlencode($search_max_users);
+	$filter['t.max_users'] = $search_max_users;
 }
 // Including the previous script generate the correct SQL filter for all the extrafields
 // we are playing with the behaviour of the Dolresource::fetchAll() by generating a fake
@@ -299,6 +310,11 @@ if (!empty($arrayfields['t.town']['checked'])) {
 	print '<input type="text" class="flat searchstring maxwidth75imp" name="search_town" value="'.dol_escape_htmltag($search_town).'">';
 	print '</td>';
 }
+if (!empty($arrayfields['t.max_users']['checked'])) {
+	print '<td class="liste_titre">';
+	print '<input type="text" class="flat searchstring maxwidth75imp" name="search_max_users" value="'.dol_escape_htmltag($search_max_users).'">';
+	print '</td>';
+}
 // Extra fields
 include DOL_DOCUMENT_ROOT.'/core/tpl/extrafields_list_search_input.tpl.php';
 // Action column
@@ -329,6 +345,9 @@ if (!empty($arrayfields['t.zip']['checked'])) {
 }
 if (!empty($arrayfields['t.town']['checked'])) {
 	print_liste_field_titre($arrayfields['t.town']['label'], $_SERVER["PHP_SELF"], "t.town", "", $param, "", $sortfield, $sortorder);
+}
+if (!empty($arrayfields['t.max_users']['checked'])) {
+	print_liste_field_titre($arrayfields['t.max_users']['label'], $_SERVER["PHP_SELF"], "t.max_users", "", $param, "", $sortfield, $sortorder);
 }
 // Extra fields
 include DOL_DOCUMENT_ROOT.'/core/tpl/extrafields_list_search_title.tpl.php';
@@ -397,6 +416,15 @@ if ($ret) {
 		if (!empty($arrayfields['t.town']['checked'])) {
 			print '<td>';
 			print $resource->town;
+			print '</td>';
+			if (!$i) {
+				$totalarray['nbfield']++;
+			}
+		}
+
+		if (!empty($arrayfields['t.max_users']['checked'])) {
+			print '<td>';
+			print $resource->max_users;
 			print '</td>';
 			if (!$i) {
 				$totalarray['nbfield']++;
