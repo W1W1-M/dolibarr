@@ -998,7 +998,6 @@ function GETPOST($paramname, $check = 'alphanohtml', $method = 0, $filter = null
  */
 function GETPOSTINT($paramname, $method = 0)
 {
-	// @phan-suppress-next-line GetPostShouldBeGetPostInt
 	return (int) GETPOST($paramname, 'int', $method, null, null, 0);
 }
 
@@ -2334,7 +2333,7 @@ function dol_get_fiche_head($links = array(), $active = '', $title = '', $notab 
 			$tabsname = str_replace("@", "", $picto);
 		}
 		$out .= '<div id="moretabs'.$tabsname.'" class="inline-block tabsElem">';
-		$out .= '<div class="tab"><a href="#" class="tab moretab inline-block tabunactive"><span class="hideonsmartphone">'.$langs->trans("More").'</span>... ('.$nbintab.')</a></div>'; // Do not use "reposition" class in the "More".
+		$out .= '<div class="tab valignmiddle"><a href="#" class="tab moretab inline-block tabunactive valignmiddle"><span class="hideonsmartphone">'.$langs->trans("More").'</span>... ('.$nbintab.')</a></div>'; // Do not use "reposition" class in the "More".
 		$out .= '<div id="moretabsList'.$tabsname.'" style="width: '.$widthofpopup.'px; position: absolute; '.$left.': -999em; text-align: '.$left.'; margin:0px; padding:2px; z-index:10;">';
 		$out .= $outmore;
 		$out .= '</div>';
@@ -7685,7 +7684,7 @@ function dol_string_onlythesehtmlattributes($stringtoclean, $allowed_attributes 
  *
  *	@param	string	$stringtoclean			String to clean
  *  @param	array	$disallowed_tags		Array of tags not allowed
- *  @param	string	$cleanalsosomestyles	Clean also some tags
+ *  @param	int 	$cleanalsosomestyles	Clean also some tags
  *	@return string	    					String cleaned
  *
  * 	@see	dol_escape_htmltag() strip_tags() dol_string_nohtmltag() dol_string_onlythesehtmltags() dol_string_onlythesehtmlattributes()
@@ -8049,7 +8048,7 @@ function dol_htmlcleanlastbr($stringtodecode)
  * @param   string	$a					Operand a
  * @param   string	$b					Operand b (ENT_QUOTES|ENT_HTML5=convert simple, double quotes, colon, e accent, ...)
  * @param   string	$c					Operand c
- * @param	string	$keepsomeentities	Entities but &, <, >, " are not converted.
+ * @param	int 	$keepsomeentities	Entities but &, <, >, " are not converted.
  * @return  string						String decoded
  */
 function dol_html_entity_decode($a, $b, $c = 'UTF-8', $keepsomeentities = 0)
@@ -8087,7 +8086,7 @@ function dol_htmlentities($string, $flags = ENT_QUOTES | ENT_SUBSTITUTE, $encodi
  *	Example, if string contains euro symbol that has ascii code 128
  *
  *	@param	string		$s      	String to check
- *  @param	string		$clean		Clean if it is not an ISO. Warning, if file is utf8, you will get a bad formatted file.
+ *  @param	int 		$clean		Clean if it is not an ISO. Warning, if file is utf8, you will get a bad formatted file.
  *	@return	int|string  	   		0 if bad iso, 1 if good iso, Or the clean string if $clean is 1
  *  @deprecated Duplicate of ascii_check()
  *  @see ascii_check()
@@ -9539,7 +9538,7 @@ function dol_htmloutput_errors($mesgstring = '', $mesgarray = array(), $keepembe
  *
  *  @param      array		$array      		Array to sort (array of array('key1'=>val1,'key2'=>val2,'key3'...) or array of objects)
  *  @param      string		$index				Key in array to use for sorting criteria
- *  @param      int			$order				Sort order ('asc' or 'desc')
+ *  @param      string		$order				Sort order ('asc' or 'desc')
  *  @param      int			$natsort			If values are strings (I said value not type): 0=Use alphabetical order, 1=use "natural" sort (natsort)
  *   											If values are numeric (I said value not type): 0=Use numeric order (even if type is string) so use a "natural" sort, 1=use "natural" sort too (same than 0), -1=Force alphabetical order
  *  @param      int			$case_sensitive		1=sort is case sensitive, 0=not case sensitive
@@ -12698,6 +12697,9 @@ function jsonOrUnserialize($stringtodecode)
  */
 function forgeSQLFromUniversalSearchCriteria($filter, &$errorstr = '', $noand = 0, $nopar = 0, $noerror = 0)
 {
+	if ($filter === '') {
+		return '';
+	}
 	if (!preg_match('/^\(.*\)$/', $filter)) {    // If $filter does not start and end with ()
 		$filter = '(' . $filter . ')';
 	}
@@ -12717,6 +12719,7 @@ function forgeSQLFromUniversalSearchCriteria($filter, &$errorstr = '', $noand = 
 	$t = preg_replace_callback('/'.$regexstring.'/i', 'dolForgeDummyCriteriaCallback', $filter);
 	$t = str_replace(array('and','or','AND','OR',' '), '', $t);		// Remove the only strings allowed between each () criteria
 	// If the string result contains something else than '()', the syntax was wrong
+
 	if (preg_match('/[^\(\)]/', $t)) {
 		$tmperrorstr = 'Bad syntax of the search string';
 		$errorstr = 'Bad syntax of the search string: '.$filter;
