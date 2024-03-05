@@ -672,10 +672,10 @@ class Dolresource extends CommonObject
 					$line->country_id = $obj->fk_country;
 					$line->state_id = $obj->fk_state;
 					$line->description = $obj->description;
-					$this->phone = $obj->phone;
-					$this->email = $obj->email;
-					$this->max_users = $obj->max_users;
-					$this->url = $obj->url;
+					$line->phone = $obj->phone;
+					$line->email = $obj->email;
+					$line->max_users = $obj->max_users;
+					$line->url = $obj->url;
 					$line->fk_code_type_resource = $obj->fk_code_type_resource;
 					$line->date_modification = $obj->date_modification;
 					$line->date_creation = $obj->date_creation;
