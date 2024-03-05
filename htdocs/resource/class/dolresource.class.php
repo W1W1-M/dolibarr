@@ -642,9 +642,9 @@ class Dolresource extends CommonObject
 			foreach ($filter as $key => $value) {
 				if (strpos($key, 'date')) {
 					$sql .= " AND ".$this->db->sanitize($key)." = '".$this->db->idate($value)."'";
-				} elseif (strpos($key, 'ef.') !== false) {
+				} elseif ((strpos($key, 'ef.') !== false) && (!empty($value))) {
 					$sql .= ((float) $value);
-				} else {
+				} elseif (!empty($value)) {
 					$sql .= " AND ".$this->db->sanitize($key)." LIKE '%".$this->db->escape($this->db->escapeforlike($value))."%'";
 				}
 			}
